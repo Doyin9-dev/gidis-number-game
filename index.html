@@ -1,102 +1,752 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#14251f">
 <title>Gidi's Number Game</title>
 <style>
+* { box-sizing: border-box; }
+
 body {
   margin: 0;
-  padding: 25px 15px;
-  background: #14251f;
-  color: white;
-  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  padding: 28px 16px 48px;
+  background:
+    radial-gradient(1100px 520px at 50% -12%, #27493d 0%, rgba(39,73,61,0) 62%),
+    #14251f;
+  color: #f2f7f4;
+  font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   text-align: center;
 }
+
 .game {
-  max-width: 400px;
-  margin: 25px auto;
-  padding: 25px 18px;
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 26px 22px 28px;
   background: #20372f;
-  border-radius: 20px;
+  border: 1px solid rgba(229, 197, 127, 0.18);
+  border-radius: 22px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.38);
 }
-h1 { color: #e5c57f; }
+
+.brand {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: #9db8ad;
+}
+
+h1 {
+  margin: 8px 0 4px;
+  color: #e5c57f;
+  font-size: 30px;
+}
+
+.tagline {
+  margin: 0 0 18px;
+  color: #b9cdc5;
+  font-size: 14px;
+}
+
+/* ---- difficulty selector ---- */
+.difficulty {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.diff {
+  padding: 10px 4px;
+  border: 1px solid rgba(229, 197, 127, 0.28);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #d7e4de;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.diff span {
+  display: block;
+  margin-top: 3px;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #9db8ad;
+}
+
+.diff:hover { transform: translateY(-2px); }
+
+.diff.active {
+  background: linear-gradient(135deg, #e5c57f, #d4af62);
+  border-color: #e5c57f;
+  color: #14251f;
+}
+
+.diff.active span { color: #4c4227; }
+
+/* ---- stats ---- */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.stat {
+  padding: 10px 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+}
+
+.stat-label {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #9db8ad;
+}
+
+.stat-value {
+  display: block;
+  margin-top: 3px;
+  font-size: 21px;
+  font-weight: 800;
+  color: #e5c57f;
+}
+
+.range {
+  margin: 0 0 6px;
+  font-size: 15px;
+  color: #cfe0d8;
+}
+
+.range b { color: #e5c57f; }
+
+/* ---- form ---- */
 input, button {
   box-sizing: border-box;
   width: 100%;
   padding: 15px;
-  margin-top: 12px;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 18px;
 }
+
 input {
+  margin-top: 12px;
+  border: 2px solid transparent;
   background: #fff;
-  border: 0;
+  color: #14251f;
   text-align: center;
+  font-weight: 700;
+  outline: none;
+  transition: border-color 0.15s ease;
 }
-button {
-  background: #e5c57f;
+
+input:focus { border-color: #e5c57f; }
+input:disabled { opacity: 0.55; }
+
+.check-btn {
+  margin-top: 12px;
   border: 0;
-  font-weight: bold;
+  background: linear-gradient(135deg, #e5c57f, #d4af62);
+  color: #14251f;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.12s ease;
 }
-#message { min-height: 45px; margin-top: 20px; }
+
+.check-btn:hover { filter: brightness(1.06); transform: translateY(-2px); }
+.check-btn:active { transform: translateY(0); }
+
+/* ---- secondary actions ---- */
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.actions button {
+  padding: 11px 8px;
+  border: 1px solid rgba(229, 197, 127, 0.45);
+  background: transparent;
+  color: #e5c57f;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.12s ease;
+}
+
+.actions button:hover {
+  background: rgba(229, 197, 127, 0.12);
+  transform: translateY(-2px);
+}
+
+.actions button:disabled {
+  opacity: 0.45;
+  cursor: default;
+  transform: none;
+}
+
+#soundBtn {
+  flex: 0 0 52px;
+  font-size: 18px;
+  padding: 11px 0;
+}
+
+/* ---- message ---- */
+.msg {
+  min-height: 54px;
+  margin: 18px 0 6px;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #d7e4de;
+  animation: pop 0.35s ease;
+}
+
+.msg.low    { color: #8fd0ff; }
+.msg.high   { color: #ffb27d; }
+.msg.warn   { color: #ffd97d; }
+.msg.hint   { color: #7fd1b9; }
+.msg.win    { color: #e5c57f; font-size: 19px; }
+.msg.lose   { color: #ff9d9d; font-size: 18px; }
+
+@keyframes pop {
+  0%   { transform: scale(0.92); opacity: 0.4; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-7px); }
+  50%      { transform: translateX(7px); }
+  75%      { transform: translateX(-4px); }
+}
+
+.shake { animation: shake 0.32s ease; }
+
+/* ---- tries dots ---- */
+.tries {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 10px 0 4px;
+}
+
+.dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.dot.on {
+  background: #e5c57f;
+  box-shadow: 0 0 10px rgba(229, 197, 127, 0.55);
+}
+
+/* ---- guess history ---- */
+.history {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  min-height: 32px;
+  margin-top: 12px;
+}
+
+.chip {
+  padding: 6px 13px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #cfe0d8;
+  animation: pop 0.25s ease;
+}
+
+.chip.up   { color: #8fd0ff; background: rgba(143, 208, 255, 0.12); }
+.chip.down { color: #ffb27d; background: rgba(255, 178, 125, 0.12); }
+.chip.win  { color: #e5c57f; background: rgba(229, 197, 127, 0.18); box-shadow: 0 0 0 1.5px rgba(229, 197, 127, 0.7); }
+.chip.warm { box-shadow: 0 0 0 1.5px rgba(229, 197, 127, 0.7); }
+
+/* ---- confetti ---- */
+#confetti {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 50;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .msg, .chip, .shake { animation: none; }
+  .diff, .check-btn, .actions button, .dot { transition: none; }
+}
+
+@media (max-width: 380px) {
+  h1 { font-size: 25px; }
+  .game { padding: 22px 14px 24px; }
+  .diff { font-size: 12.5px; }
+}
 </style>
 </head>
 <body>
-<div class="game">
-  <p>GIDI HERITAGE PRESENTS</p>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<main class="game">
+  <p class="brand">GIDI HERITAGE PRESENTS</p>
   <h1>Gidi's Number Game</h1>
-  <p>Guess my secret number from 1 to 10!</p>
-  <form id="gameForm">
-    <input id="guess" type="number" min="1" max="10"
-      step="1" placeholder="Enter 1–10" required>
-    <button type="submit">Check My Guess</button>
+  <p class="tagline">Guess the secret number before your tries run out!</p>
+
+  <div class="difficulty" role="group" aria-label="Difficulty">
+    <button type="button" class="diff active" data-level="easy">Easy<span>1–10 · 5 tries</span></button>
+    <button type="button" class="diff" data-level="medium">Medium<span>1–50 · 7 tries</span></button>
+    <button type="button" class="diff" data-level="hard">Hard<span>1–100 · 8 tries</span></button>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <span class="stat-label">Score</span>
+      <span class="stat-value" id="score">0</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Streak</span>
+      <span class="stat-value" id="streak">0</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Best</span>
+      <span class="stat-value" id="best">0</span>
+    </div>
+  </div>
+
+  <p class="range" id="range"></p>
+
+  <form id="gameForm" autocomplete="off">
+    <input id="guess" type="number" min="1" max="10" step="1"
+      inputmode="numeric" placeholder="Enter 1–10"
+      aria-label="Your guess" required>
+    <button type="submit" class="check-btn" id="checkBtn">Check My Guess</button>
   </form>
-  <p id="message">Let's play, champ!</p>
-  <p>Guesses: <span id="count">0</span></p>
-  <button type="button" id="again">Play Again</button>
-</div>
+
+  <div class="actions">
+    <button type="button" id="hintBtn">💡 Hint (halves score)</button>
+    <button type="button" id="againBtn">🔄 New Game</button>
+    <button type="button" id="soundBtn" aria-pressed="false" title="Mute sounds">🔊</button>
+  </div>
+
+  <p id="message" class="msg" aria-live="polite">Let's play, champ!</p>
+  <div class="tries" id="tries"></div>
+  <div class="history" id="history" aria-label="Guess history"></div>
+</main>
+
 <script>
-let secret = Math.floor(Math.random() * 10) + 1;
-let guesses = 0;
-let finished = false;
+(function () {
+  "use strict";
 
-document.getElementById("gameForm").onsubmit = function(event) {
-  event.preventDefault();
-  if (finished) return;
+  var LEVELS = {
+    easy:   { max: 10,  tries: 5, base: 60,  perTry: 12 },
+    medium: { max: 50,  tries: 7, base: 140, perTry: 18 },
+    hard:   { max: 100, tries: 8, base: 240, perTry: 26 }
+  };
 
-  let guess = Number(document.getElementById("guess").value);
-  let message = document.getElementById("message");
+  function $(id) { return document.getElementById(id); }
 
-  if (!Number.isInteger(guess) || guess < 1 || guess > 10) {
-    message.textContent = "Enter a whole number from 1 to 10.";
-    return;
+  var form = $("gameForm"),
+      guessInput = $("guess"),
+      checkBtn = $("checkBtn"),
+      messageEl = $("message"),
+      rangeEl = $("range"),
+      scoreEl = $("score"),
+      streakEl = $("streak"),
+      bestEl = $("best"),
+      triesEl = $("tries"),
+      historyEl = $("history"),
+      hintBtn = $("hintBtn"),
+      againBtn = $("againBtn"),
+      soundBtn = $("soundBtn");
+
+  // ---------- storage ----------
+  function loadBest() {
+    try { return JSON.parse(localStorage.getItem("gidi-best")) || {}; }
+    catch (e) { return {}; }
+  }
+  function saveBest() {
+    try { localStorage.setItem("gidi-best", JSON.stringify(best)); } catch (e) {}
+  }
+  function loadMuted() {
+    try { return localStorage.getItem("gidi-muted") === "1"; } catch (e) { return false; }
+  }
+  function saveMuted() {
+    try { localStorage.setItem("gidi-muted", muted ? "1" : "0"); } catch (e) {}
   }
 
-  guesses++;
-  document.getElementById("count").textContent = guesses;
+  // ---------- game state ----------
+  var level = "easy";
+  var secret = 0, triesLeft = 0, finished = false, hintUsed = false;
+  var prevDiff = null, history = [];
+  var score = 0, streak = 0;
+  var best = loadBest();
+  var muted = loadMuted();
 
-  if (guess === secret) {
-    message.textContent = "Correct! You win!";
+  // ---------- sound (Web Audio, no assets) ----------
+  var audioCtx = null;
+
+  function ensureAudio() {
+    if (!audioCtx) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      audioCtx = new AC();
+    }
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    return audioCtx;
+  }
+
+  function tone(freq, delay, dur, type, vol) {
+    if (!audioCtx) return;
+    var t0 = audioCtx.currentTime + delay;
+    var osc = audioCtx.createOscillator();
+    var gain = audioCtx.createGain();
+    osc.type = type || "sine";
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.0001, t0);
+    gain.gain.exponentialRampToValueAtTime(vol || 0.08, t0 + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.05);
+  }
+
+  function playSound(name) {
+    if (muted) return;
+    if (!ensureAudio()) return;
+    var i;
+    if (name === "click") {
+      tone(620, 0, 0.05, "triangle", 0.06);
+    } else if (name === "low") {
+      tone(330, 0, 0.12, "sine", 0.1);
+      tone(262, 0.09, 0.16, "sine", 0.1);
+    } else if (name === "high") {
+      tone(523, 0, 0.12, "sine", 0.1);
+      tone(659, 0.09, 0.16, "sine", 0.1);
+    } else if (name === "warm") {
+      tone(784, 0, 0.09, "triangle", 0.07);
+    } else if (name === "cold") {
+      tone(220, 0, 0.12, "triangle", 0.07);
+    } else if (name === "win") {
+      var winNotes = [523, 659, 784, 1047];
+      for (i = 0; i < winNotes.length; i++) tone(winNotes[i], i * 0.11, 0.2, "triangle", 0.12);
+    } else if (name === "lose") {
+      var loseNotes = [392, 349, 294, 233];
+      for (i = 0; i < loseNotes.length; i++) tone(loseNotes[i], i * 0.14, 0.22, "sine", 0.1);
+    } else if (name === "hint") {
+      tone(1047, 0, 0.1, "triangle", 0.08);
+      tone(1319, 0.08, 0.14, "triangle", 0.08);
+    }
+  }
+
+  function unlockAudio() {
+    ensureAudio();
+    document.removeEventListener("pointerdown", unlockAudio);
+    document.removeEventListener("keydown", unlockAudio);
+  }
+  document.addEventListener("pointerdown", unlockAudio);
+  document.addEventListener("keydown", unlockAudio);
+
+  // ---------- confetti ----------
+  var canvas = $("confetti");
+  var ctx = canvas.getContext("2d");
+  var particles = [];
+  var confettiRaf = 0;
+
+  function sizeCanvas() {
+    var dpr = window.devicePixelRatio || 1;
+    canvas.width = window.innerWidth * dpr;
+    canvas.height = window.innerHeight * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener("resize", sizeCanvas);
+  sizeCanvas();
+
+  function launchConfetti() {
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var colors = ["#e5c57f", "#7fd1b9", "#f7efe0", "#f0a868", "#e88d8d"];
+    for (var i = 0; i < 140; i++) {
+      particles.push({
+        x: window.innerWidth / 2 + (Math.random() - 0.5) * 120,
+        y: window.innerHeight * 0.38,
+        vx: (Math.random() - 0.5) * 16,
+        vy: -Math.random() * 13 - 5,
+        w: 6 + Math.random() * 8,
+        h: 4 + Math.random() * 6,
+        color: colors[(Math.random() * colors.length) | 0],
+        rot: Math.random() * Math.PI,
+        vr: (Math.random() - 0.5) * 0.3,
+        life: 1
+      });
+    }
+    if (!confettiRaf) confettiRaf = requestAnimationFrame(tickConfetti);
+  }
+
+  function tickConfetti() {
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    var alive = false;
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      p.vy += 0.32;
+      p.vx *= 0.985;
+      p.vy *= 0.985;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.vr;
+      p.life -= 0.008;
+      if (p.life > 0 && p.y < window.innerHeight + 40) {
+        alive = true;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.globalAlpha = Math.max(0, Math.min(1, p.life * 1.5));
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      }
+    }
+    if (alive) {
+      confettiRaf = requestAnimationFrame(tickConfetti);
+    } else {
+      particles = [];
+      confettiRaf = 0;
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    }
+  }
+
+  // ---------- UI helpers ----------
+  function setMessage(text, kind) {
+    messageEl.textContent = text;
+    messageEl.className = "msg" + (kind ? " " + kind : "");
+    messageEl.style.animation = "none";
+    void messageEl.offsetWidth; /* reflow to retrigger pop */
+    messageEl.style.animation = "";
+  }
+
+  function shake(el) {
+    el.classList.remove("shake");
+    void el.offsetWidth;
+    el.classList.add("shake");
+  }
+
+  function updateStats() {
+    scoreEl.textContent = score;
+    streakEl.textContent = streak;
+    bestEl.textContent = best[level] || 0;
+  }
+
+  function renderTries() {
+    var total = LEVELS[level].tries;
+    triesEl.innerHTML = "";
+    for (var i = 0; i < total; i++) {
+      var dot = document.createElement("span");
+      dot.className = "dot" + (i < triesLeft ? " on" : "");
+      triesEl.appendChild(dot);
+    }
+    triesEl.setAttribute("aria-label", triesLeft + " of " + total + " tries left");
+  }
+
+  function renderHistory() {
+    historyEl.innerHTML = "";
+    for (var i = 0; i < history.length; i++) {
+      var h = history[i];
+      var chip = document.createElement("span");
+      chip.className = "chip " + h.dir + (h.warmer ? " warm" : "");
+      chip.textContent = (h.dir === "up" ? "↑ " : h.dir === "win" ? "✓ " : "↓ ") + h.value;
+      historyEl.appendChild(chip);
+    }
+  }
+
+  function updateRange() {
+    var cfg = LEVELS[level];
+    var lo = 1, hi = cfg.max;
+    for (var i = 0; i < history.length; i++) {
+      var h = history[i];
+      if (h.dir === "up") lo = Math.max(lo, h.value + 1);
+      else hi = Math.min(hi, h.value - 1);
+    }
+    if (history.length === 0) {
+      rangeEl.innerHTML = "I'm thinking of a number from <b>1</b> to <b>" + cfg.max + "</b>.";
+    } else {
+      rangeEl.innerHTML = "It's between <b>" + lo + "</b> and <b>" + hi + "</b>.";
+    }
+  }
+
+  function finishRound() {
     finished = true;
-  } else if (guess < secret) {
-    message.textContent = "Too low! Try higher.";
-  } else {
-    message.textContent = "Too high! Try lower.";
+    guessInput.disabled = true;
+    checkBtn.textContent = "Play Again 🔄";
   }
 
-  document.getElementById("guess").value = "";
-};
+  function newGame() {
+    var cfg = LEVELS[level];
+    secret = Math.floor(Math.random() * cfg.max) + 1;
+    triesLeft = cfg.tries;
+    finished = false;
+    hintUsed = false;
+    prevDiff = null;
+    history = [];
+    guessInput.disabled = false;
+    guessInput.min = "1";
+    guessInput.max = String(cfg.max);
+    guessInput.value = "";
+    guessInput.placeholder = "Enter 1–" + cfg.max;
+    checkBtn.textContent = "Check My Guess";
+    hintBtn.disabled = false;
+    setMessage("New game! You have " + cfg.tries + " tries to find my number.", "");
+    updateStats();
+    renderTries();
+    renderHistory();
+    updateRange();
+    guessInput.focus();
+  }
 
-document.getElementById("again").onclick = function() {
-  secret = Math.floor(Math.random() * 10) + 1;
-  guesses = 0;
-  finished = false;
-  document.getElementById("count").textContent = "0";
-  document.getElementById("message").textContent = "New number chosen. Let's play!";
-  document.getElementById("guess").value = "";
-};
+  // ---------- guess logic ----------
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    if (finished) {
+      playSound("click");
+      newGame();
+      return;
+    }
+
+    var cfg = LEVELS[level];
+    var raw = guessInput.value.trim();
+    var guess = Number(raw);
+
+    if (raw === "" || !Number.isInteger(guess) || guess < 1 || guess > cfg.max) {
+      setMessage("Enter a whole number from 1 to " + cfg.max + ".", "warn");
+      shake(guessInput);
+      return;
+    }
+
+    for (var i = 0; i < history.length; i++) {
+      if (history[i].value === guess) {
+        setMessage("You already tried " + guess + ". Pick another number!", "warn");
+        shake(guessInput);
+        return;
+      }
+    }
+
+    triesLeft--;
+
+    var diff = Math.abs(guess - secret);
+    var warmer = prevDiff !== null && diff < prevDiff;
+    var colder = prevDiff !== null && diff > prevDiff;
+    prevDiff = diff;
+
+    if (guess === secret) {
+      history.push({ value: guess, dir: "win", warmer: false });
+      renderHistory();
+      renderTries();
+      rangeEl.innerHTML = "🎯 The number was <b>" + secret + "</b>.";
+
+      // ---- win ----
+      var pts = cfg.base + cfg.perTry * triesLeft;
+      pts = Math.round(pts * (1 + Math.min(streak, 5) * 0.1));
+      if (hintUsed) pts = Math.round(pts * 0.5);
+      score += pts;
+      streak++;
+      if (!best[level] || pts > best[level]) {
+        best[level] = pts;
+        saveBest();
+      }
+      updateStats();
+      setMessage("🎉 Correct! The number was " + secret + ". +" + pts + " points!", "win");
+      playSound("win");
+      launchConfetti();
+      finishRound();
+      guessInput.value = "";
+      return;
+    }
+
+    var dir = guess < secret ? "up" : "down";
+    history.push({ value: guess, dir: dir, warmer: warmer });
+    renderHistory();
+    renderTries();
+    updateRange();
+    guessInput.value = "";
+
+    if (triesLeft <= 0) {
+      // ---- loss ----
+      streak = 0;
+      updateStats();
+      rangeEl.innerHTML = "🎯 The number was <b>" + secret + "</b>.";
+      setMessage("😅 Out of tries! The number was " + secret + ". Give it another shot!", "lose");
+      playSound("lose");
+      finishRound();
+      return;
+    }
+
+    var temp = warmer ? " 🔥 Warmer!" : colder ? " ❄️ Colder!" : "";
+    if (dir === "up") {
+      setMessage("Too low! Go higher." + temp, "low");
+    } else {
+      setMessage("Too high! Go lower." + temp, "high");
+    }
+    playSound(dir === "up" ? "low" : "high");
+    if (warmer) playSound("warm");
+    else if (colder) playSound("cold");
+  });
+
+  // ---------- buttons ----------
+  hintBtn.addEventListener("click", function () {
+    if (finished || hintUsed) return;
+    hintUsed = true;
+    hintBtn.disabled = true;
+    var parity = secret % 2 === 0 ? "even" : "odd";
+    setMessage("💡 The number is " + parity + ". Round score will be halved.", "hint");
+    playSound("hint");
+  });
+
+  againBtn.addEventListener("click", function () {
+    playSound("click");
+    newGame();
+  });
+
+  soundBtn.addEventListener("click", function () {
+    muted = !muted;
+    saveMuted();
+    updateSoundBtn();
+    if (!muted) playSound("click");
+  });
+
+  function updateSoundBtn() {
+    soundBtn.textContent = muted ? "🔇" : "🔊";
+    soundBtn.setAttribute("aria-pressed", String(muted));
+    soundBtn.title = muted ? "Unmute sounds" : "Mute sounds";
+  }
+
+  // ---------- difficulty ----------
+  var diffButtons = document.querySelectorAll(".diff");
+  for (var d = 0; d < diffButtons.length; d++) {
+    diffButtons[d].addEventListener("click", function () {
+      for (var j = 0; j < diffButtons.length; j++) diffButtons[j].classList.remove("active");
+      this.classList.add("active");
+      level = this.getAttribute("data-level");
+      playSound("click");
+      newGame();
+    });
+  }
+
+  // ---------- start ----------
+  updateSoundBtn();
+  newGame();
+})();
 </script>
 </body>
 </html>
